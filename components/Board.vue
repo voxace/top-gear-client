@@ -6,7 +6,6 @@
     <v-card-text>
       <v-data-table
         :items="times"
-        :loading="loading"
         :headers="headers"
         :hide-default-footer="true"
       >
@@ -18,6 +17,13 @@
         </template>
         <template #[`item.laptime`]="{ item }">
           <td>{{ FormatTime(item) }}</td>
+        </template>
+        <template #[`item.remove`]="{ item }">
+          <td>
+            <v-btn x-small color="error" icon @click="RemoveTime(item._id)"
+              ><v-icon>mdi-delete</v-icon>
+            </v-btn>
+          </td>
         </template>
       </v-data-table>
     </v-card-text>
@@ -46,7 +52,6 @@ export default {
   },
   data() {
     return {
-      loading: false,
       Times: [],
       headers: [
         {
@@ -65,8 +70,15 @@ export default {
         {
           text: 'Lap Time',
           value: 'laptime',
-          align: 'right',
+          align: 'center',
           width: '100px',
+          sortable: false,
+        },
+        {
+          text: '',
+          value: 'remove',
+          align: 'center',
+          width: '20px',
           sortable: false,
         },
       ],
@@ -87,13 +99,13 @@ export default {
   },
   methods: {
     async GetTimes() {
-      this.loading = true
       this.Times = await this.$axios.$get(
         '/laptime/leaderboard?leaderboard=' + this.id
       )
-      setTimeout(() => {
-        this.loading = false
-      }, 100)
+    },
+    async RemoveTime(id) {
+      await this.$axios.$delete('/laptime', { data: { id } })
+      await this.GetTimes()
     },
     FormatTime(item) {
       return item.minutes + ':' + item.seconds + ':' + item.ms
@@ -105,5 +117,11 @@ export default {
 <style>
 .v-data-table-header th {
   font-size: 16px !important;
+}
+tr:hover {
+  background-color: transparent !important;
+}
+.v-btn i:hover {
+  transform: scale(1.25);
 }
 </style>

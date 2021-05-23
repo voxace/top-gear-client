@@ -1,5 +1,5 @@
 <template>
-  <v-row justify="center" align="center">
+  <v-row justify="center" align="top">
     <v-col :cols="12">
       <img src="TOP-GEAR-HEADER.png" />
     </v-col>
