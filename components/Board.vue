@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-toolbar flat>
-      <v-toolbar-title>{{ track }} - {{ car }}</v-toolbar-title>
+      <v-toolbar-title>{{ car }} @ {{ track }}</v-toolbar-title>
     </v-toolbar>
     <v-card-text>
       <v-data-table

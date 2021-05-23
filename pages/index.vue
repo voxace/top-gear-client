@@ -1,7 +1,7 @@
 <template>
   <v-row justify="center" align="top">
     <v-col :cols="12">
-      <img src="TOP-GEAR-HEADER.png" />
+      <v-img src="TOP-GEAR-HEADER.png" />
     </v-col>
     <v-col v-for="(leaderboard, n) in leaderboards" :key="n">
       <Board
