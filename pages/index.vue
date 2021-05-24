@@ -22,8 +22,8 @@ export default {
   },
   data() {
     return {
-      loading: false,
       Leaderboards: [],
+      timer: '',
     }
   },
   computed: {
@@ -34,17 +34,17 @@ export default {
   created() {
     if (process.browser) {
       this.GetBoards()
+      this.timer = setInterval(this.GetBoards, 30000)
     }
+  },
+  destroyed() {
+    clearInterval(this.timer)
   },
   methods: {
     async GetBoards() {
-      this.loading = true
       this.Leaderboards = await this.$axios.$get('/leaderboard')
       // eslint-disable-next-line no-console
       console.log(this.Leaderboards)
-      setTimeout(() => {
-        this.loading = false
-      }, 100)
     },
   },
 }
