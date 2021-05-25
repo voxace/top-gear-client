@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-toolbar flat>
-      <v-toolbar-title>{{ car }} @ {{ track }}</v-toolbar-title>
+      <v-toolbar-title> {{ car }} @ {{ track }} </v-toolbar-title>
     </v-toolbar>
     <v-card-text>
       <v-data-table
@@ -18,7 +18,7 @@
         <template #[`item.laptime`]="{ item }">
           <td>{{ FormatTime(item) }}</td>
         </template>
-        <template #[`item.remove`]="{ item }">
+        <template v-if="admin" #[`item.remove`]="{ item }">
           <td>
             <v-btn x-small color="error" icon @click="RemoveTime(item._id)"
               ><v-icon>mdi-delete</v-icon>
@@ -27,6 +27,12 @@
         </template>
       </v-data-table>
     </v-card-text>
+    <v-card-actions v-if="admin">
+      <v-spacer />
+      <v-btn small plain color="error" class="mr-4" @click="RemoveBoard(id)"
+        >REMOVE
+      </v-btn>
+    </v-card-actions>
   </v-card>
 </template>
 
@@ -49,39 +55,15 @@ export default {
       required: true,
       default: '',
     },
+    admin: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
   },
   data() {
     return {
       Times: [],
-      headers: [
-        {
-          text: '#',
-          value: 'num',
-          align: 'center',
-          width: '40px',
-          sortable: false,
-        },
-        {
-          text: 'Name',
-          value: 'name',
-          align: 'left',
-          sortable: false,
-        },
-        {
-          text: 'Lap Time',
-          value: 'laptime',
-          align: 'center',
-          width: '100px',
-          sortable: false,
-        },
-        {
-          text: '',
-          value: 'remove',
-          align: 'center',
-          width: '20px',
-          sortable: false,
-        },
-      ],
     }
   },
   computed: {
@@ -90,6 +72,62 @@ export default {
         ...items,
         index: index + 1,
       }))
+    },
+    headers() {
+      if (this.admin) {
+        return [
+          {
+            text: '#',
+            value: 'num',
+            align: 'center',
+            width: '40px',
+            sortable: false,
+          },
+          {
+            text: 'Name',
+            value: 'name',
+            align: 'left',
+            sortable: false,
+          },
+          {
+            text: 'Lap Time',
+            value: 'laptime',
+            align: 'center',
+            width: '100px',
+            sortable: false,
+          },
+          {
+            text: '',
+            value: 'remove',
+            align: 'center',
+            width: '20px',
+            sortable: false,
+          },
+        ]
+      } else {
+        return [
+          {
+            text: '#',
+            value: 'num',
+            align: 'center',
+            width: '40px',
+            sortable: false,
+          },
+          {
+            text: 'Name',
+            value: 'name',
+            align: 'left',
+            sortable: false,
+          },
+          {
+            text: 'Lap Time',
+            value: 'laptime',
+            align: 'center',
+            width: '100px',
+            sortable: false,
+          },
+        ]
+      }
     },
   },
   created() {
@@ -104,8 +142,50 @@ export default {
       )
     },
     async RemoveTime(id) {
-      await this.$axios.$delete('/laptime', { data: { id } })
+      const vm = this
+      await this.$axios
+        .$delete('/laptime/' + id)
+        .then(() => {
+          vm.$notifier.showMessage({
+            content: 'Laptime removed successfully',
+            color: 'success',
+          })
+        })
+        .catch(() => {
+          vm.$notifier.showMessage({
+            content: 'Error deleting laptime',
+            color: 'error',
+          })
+        })
       await this.GetTimes()
+    },
+    async RemoveBoard(id) {
+      const vm = this
+      await this.$axios
+        .$delete('/laptime/leaderboard/' + id)
+        .then(async () => {
+          await this.$axios
+            .$delete('/leaderboard/' + id)
+            .then(() => {
+              vm.$notifier.showMessage({
+                content: 'Leaderboard removed successfully',
+                color: 'success',
+              })
+            })
+            .catch(() => {
+              vm.$notifier.showMessage({
+                content: 'Error deleting laptimes from leaderboard',
+                color: 'error',
+              })
+            })
+        })
+        .catch(() => {
+          vm.$notifier.showMessage({
+            content: 'Error deleting leaderboard',
+            color: 'error',
+          })
+        })
+      this.$emit('refresh')
     },
     FormatTime(item) {
       return item.minutes + ':' + item.seconds + ':' + item.ms

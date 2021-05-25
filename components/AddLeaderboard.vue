@@ -56,6 +56,7 @@ export default {
           })
           this.car = ''
           this.track = ''
+          this.$emit('close')
         })
         .catch(() => {
           vm.$notifier.showMessage({

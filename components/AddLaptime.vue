@@ -6,7 +6,11 @@
           <h2>Add Laptime</h2>
         </v-col>
         <v-col cols="12">
-          <v-text-field v-model="name" label="Name" required></v-text-field>
+          <v-text-field
+            v-model="name"
+            label="Driver Name"
+            required
+          ></v-text-field>
         </v-col>
         <v-col cols="4">
           <v-text-field
@@ -69,9 +73,14 @@
 
 <script>
 export default {
+  props: {
+    leaderboards: {
+      type: Array,
+      required: true,
+    },
+  },
   data() {
     return {
-      Leaderboards: [],
       snackbarText: 'Leaderboard Saved',
       timeout: 3000,
       snackbar: true,
@@ -91,18 +100,9 @@ export default {
       }
       return false
     },
-    leaderboards() {
-      return this.Leaderboards
-    },
   },
-  created() {
-    if (process.browser) {
-      this.GetBoards()
-      this.timer = setInterval(this.GetBoards, 30000)
-    }
-  },
-  destroyed() {
-    clearInterval(this.timer)
+  mounted() {
+    this.leaderboard = this.leaderboards[0]
   },
   methods: {
     validateMinutes() {
@@ -162,14 +162,6 @@ export default {
         })
       }
     },
-    GetLeaderboardText(_id) {
-      return 'test'
-    },
-    async GetBoards() {
-      this.Leaderboards = await this.$axios.$get('/leaderboard')
-      // eslint-disable-next-line no-console
-      console.log(this.Leaderboards)
-    },
     async SaveLaptime() {
       const vm = this
       await this.$axios
@@ -185,8 +177,12 @@ export default {
             content: 'Laptime saved successfully',
             color: 'success',
           })
-          this.car = ''
-          this.track = ''
+          this.name = ''
+          this.minutes = 0
+          this.seconds = 0
+          this.ms = 0
+          this.leaderboard = ''
+          this.$emit('close')
         })
         .catch(() => {
           vm.$notifier.showMessage({
