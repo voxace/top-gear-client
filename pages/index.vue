@@ -147,18 +147,24 @@ export default {
       return this.Leaderboards
     },
   },
-  created() {
-    if (process.browser) {
-      this.GetBoards()
-      this.timer = setInterval(this.GetBoards, 30000)
-    }
+  mounted() {
+    this.$nextTick(() => {
+      this.$nuxt.$loading.start()
+      if (process.browser) {
+        this.GetBoards()
+        this.timer = setInterval(this.GetBoards, 15000)
+      }
+      setTimeout(() => this.$nuxt.$loading.finish(), 500)
+    })
   },
   destroyed() {
     clearInterval(this.timer)
   },
   methods: {
     async GetBoards() {
+      this.$nuxt.$loading.start()
       this.Leaderboards = await this.$axios.$get('/leaderboard')
+      setTimeout(() => this.$nuxt.$loading.finish(), 1000)
     },
     openAdminDialog() {
       this.adminDialog = true

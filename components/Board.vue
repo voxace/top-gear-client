@@ -16,7 +16,7 @@
           <td>{{ item.name }}</td>
         </template>
         <template #[`item.laptime`]="{ item }">
-          <td>{{ FormatTime(item) }}</td>
+          <td class="pl-2">{{ FormatTime(item) }}</td>
         </template>
         <template v-if="admin" #[`item.remove`]="{ item }">
           <td>
@@ -93,7 +93,7 @@ export default {
             text: 'Lap Time',
             value: 'laptime',
             align: 'center',
-            width: '100px',
+            width: '120px',
             sortable: false,
           },
           {
@@ -123,7 +123,7 @@ export default {
             text: 'Lap Time',
             value: 'laptime',
             align: 'center',
-            width: '100px',
+            width: '120px',
             sortable: false,
           },
         ]
@@ -188,7 +188,13 @@ export default {
       this.$emit('refresh')
     },
     FormatTime(item) {
-      return item.minutes + ':' + item.seconds + ':' + item.ms
+      return (
+        item.minutes +
+        ':' +
+        item.seconds +
+        ':' +
+        String(item.ms).padStart(3, '0')
+      )
     },
   },
 }
@@ -196,7 +202,7 @@ export default {
 
 <style>
 .v-data-table-header th {
-  font-size: 16px !important;
+  font-size: 1rem !important;
 }
 tr:hover {
   background-color: transparent !important;
