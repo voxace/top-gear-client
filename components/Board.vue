@@ -66,6 +66,14 @@ export default {
       Times: [],
     }
   },
+  mounted() {
+    this.$nextTick(() => {
+      if (process.browser) {
+        this.GetTimes()
+        this.timer = setInterval(this.GetTimes, 15000)
+      }
+    })
+  },
   computed: {
     times() {
       return this.Times.map((items, index) => ({
@@ -129,11 +137,6 @@ export default {
         ]
       }
     },
-  },
-  created() {
-    if (process.browser) {
-      this.GetTimes()
-    }
   },
   methods: {
     async GetTimes() {
