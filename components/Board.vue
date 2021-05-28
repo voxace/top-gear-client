@@ -70,7 +70,7 @@ export default {
     this.$nextTick(() => {
       if (process.browser) {
         this.GetTimes()
-        this.timer = setInterval(this.GetTimes, 15000)
+        this.timer = setInterval(this.GetTimes, 30000) // refresh times every 30 sec
       }
     })
   },

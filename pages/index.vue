@@ -67,10 +67,10 @@
           <v-card-text>
             <v-container v-if="dialog">
               <v-row justify="center" align="start">
-                <v-col cols="6">
+                <v-col v-if="admin">
                   <AddLeaderboard @close="closeDialog()" />
                 </v-col>
-                <v-col cols="6">
+                <v-col>
                   <AddLaptime
                     :leaderboards="leaderboards"
                     @close="closeDialog()"
@@ -152,7 +152,7 @@ export default {
       this.$nuxt.$loading.start()
       if (process.browser) {
         this.GetBoards()
-        this.timer = setInterval(this.GetBoards, 15000)
+        this.timer = setInterval(this.GetBoards, 120000) // refresh boards every 2 mins
       }
       setTimeout(() => this.$nuxt.$loading.finish(), 500)
     })
